@@ -1,13 +1,13 @@
 package com.example.app;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class CalculatorTest {
     @Test
     void add_shouldReturnSum() {
         Calculator c = new Calculator();
-        assertEquals(7, c.add(3, 4));
+        assertEquals(8, c.add(3, 4)); // Intentionally wrong to test pipeline blocking
     }
 
     @Test
