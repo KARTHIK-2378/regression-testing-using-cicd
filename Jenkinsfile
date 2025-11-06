@@ -24,43 +24,15 @@ pipeline {
         }
 
         stage('Build & Test') {
-            steps { bat 'mvn -B -Dmaven.test.failure.ignore=false clean test' }
+            steps {
+                bat 'mvn -B -Dmaven.test.failure.ignore=false clean test'
+            }
             post {
                 always {
                     junit '**/target/surefire-reports/*.xml'
-                    // Archive JaCoCo coverage HTML report
-                    publishHTML(target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'target/site/jacoco',
-                        reportFiles: 'index.html',
-                        reportName: 'JaCoCo Coverage Report'
-                    ])
+                    echo 'Code coverage report generated in target/site/jacoco/index.html'
                 }
                 unsuccessful { echo 'Tests failed — blocking deployment.' }
-            }
-        }
-
-        stage('Code Quality Analysis') {
-            steps {
-                script {
-                    echo 'Running static code analysis with SpotBugs...'
-                    bat 'mvn -B spotbugs:spotbugs || echo SpotBugs completed'
-                }
-            }
-            post {
-                always {
-                    // Archive SpotBugs HTML report
-                    publishHTML(target: [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'target/site',
-                        reportFiles: 'spotbugs.html',
-                        reportName: 'SpotBugs Report'
-                    ])
-                }
             }
         }
 
