@@ -1,0 +1,25 @@
+# Maven / Java
+/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDEs
+/.idea/
+*.iml
+/.vscode/
+/.classpath
+/.project
+/.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build / logs
+*.log
+
+# Others
+generated-sources/
+generated-test-sources/
