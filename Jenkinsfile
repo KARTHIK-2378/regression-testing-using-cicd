@@ -4,7 +4,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK17'
+        jdk 'JDK21'
         maven 'Maven3'
     }
 
@@ -24,7 +24,7 @@ pipeline {
         }
 
         stage('Build & Test') {
-            steps { sh 'mvn -B -Dmaven.test.failure.ignore=false clean test' }
+            steps { bat 'mvn -B -Dmaven.test.failure.ignore=false clean test' }
             post {
                 always { junit '**/target/surefire-reports/*.xml' }
                 unsuccessful { echo 'Tests failed — blocking deployment.' }
@@ -34,7 +34,7 @@ pipeline {
         stage('Package') {
             when { expression { currentBuild.resultIsWorseOrEqualTo('UNSTABLE') == false } }
             steps {
-                sh 'mvn -B -DskipTests package'
+                bat 'mvn -B -DskipTests package'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
