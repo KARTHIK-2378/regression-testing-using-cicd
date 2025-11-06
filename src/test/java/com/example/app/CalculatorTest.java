@@ -7,7 +7,7 @@ public class CalculatorTest {
     @Test
     void add_shouldReturnSum() {
         Calculator c = new Calculator();
-        assertEquals(8, c.add(3, 4)); // Intentionally wrong to test pipeline
+        assertEquals(7, c.add(3, 4));
     }
 
     @Test
