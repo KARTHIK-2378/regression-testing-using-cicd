@@ -26,8 +26,34 @@ pipeline {
         stage('Build & Test') {
             steps { bat 'mvn -B -Dmaven.test.failure.ignore=false clean test' }
             post {
-                always { junit '**/target/surefire-reports/*.xml' }
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                    // Publish JaCoCo coverage report
+                    jacoco(
+                        execPattern: '**/target/jacoco.exec',
+                        classPattern: '**/target/classes',
+                        sourcePattern: '**/src/main/java'
+                    )
+                }
                 unsuccessful { echo 'Tests failed — blocking deployment.' }
+            }
+        }
+
+        stage('Code Quality Analysis') {
+            steps {
+                script {
+                    echo 'Running static code analysis with SpotBugs...'
+                    bat 'mvn -B spotbugs:check'
+                }
+            }
+            post {
+                always {
+                    // Publish SpotBugs results
+                    recordIssues(
+                        enabledForFailure: true,
+                        tools: [spotBugs(pattern: '**/target/spotbugsXml.xml')]
+                    )
+                }
             }
         }
 
@@ -57,12 +83,30 @@ pipeline {
     post {
         success {
             echo '✅ Pipeline succeeded - Build, Test, Package, and Deploy completed successfully!'
+            // Uncomment and configure email after setting up SMTP in Jenkins
+            // emailext(
+            //     subject: "✅ SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+            //     body: """<p>Pipeline completed successfully!</p>
+            //              <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
+            //     recipientProviders: [developers(), requestor()],
+            //     mimeType: 'text/html'
+            // )
         }
         failure {
             echo '❌ Pipeline failed - Check the logs above for details.'
+            // Uncomment and configure email after setting up SMTP in Jenkins
+            // emailext(
+            //     subject: "❌ FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+            //     body: """<p>Pipeline failed!</p>
+            //              <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
+            //     recipientProviders: [developers(), requestor()],
+            //     mimeType: 'text/html'
+            // )
         }
         always {
             echo "Build #${currentBuild.number} finished with status: ${currentBuild.currentResult}"
+            // Clean up workspace to save space
+            cleanWs(deleteDirs: true, patterns: [[pattern: 'target/**', type: 'INCLUDE']])
         }
     }
 }

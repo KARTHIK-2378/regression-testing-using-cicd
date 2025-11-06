@@ -1,19 +1,33 @@
 # Automated Regression Testing with CI/CD
 
-Java calculator application demonstrating automated regression testing using Jenkins CI/CD pipeline.
+[![Build Status](http://localhost:8080/buildStatus/icon?job=regression-testing-using-cicd)](http://localhost:8080/job/regression-testing-using-cicd/)
+[![Coverage](http://localhost:8080/job/regression-testing-using-cicd/lastBuild/jacoco/badge/icon)](http://localhost:8080/job/regression-testing-using-cicd/lastBuild/jacoco/)
+
+Java calculator application demonstrating automated regression testing using Jenkins CI/CD pipeline with code coverage and static analysis.
+
+## Features
+
+- ✅ Automated regression testing with JUnit 5
+- 📊 Code coverage reporting with JaCoCo
+- 🔍 Static code analysis with SpotBugs
+- 🚀 Continuous deployment to local directory
+- 📧 Email notifications (optional)
+- 🔄 GitHub webhook integration
 
 ## Project Structure
 
 - `src/main/java/.../Calculator.java` - Simple calculator implementation
 - `src/test/java/.../CalculatorTest.java` - JUnit test cases
 - `Jenkinsfile` - Jenkins pipeline definition for CI/CD
+- `pom.xml` - Maven build configuration with plugins
 
 ## Pipeline Stages
 
-1. **Checkout** - Fetches latest code
-2. **Build & Test** - Runs unit tests with fail-fast
-3. **Package** - Creates JAR (only if tests pass)
-4. **Deploy** - Simulated deployment step (main branch only)
+1. **Checkout** - Fetches latest code from GitHub
+2. **Build & Test** - Runs unit tests with fail-fast & generates coverage
+3. **Code Quality Analysis** - SpotBugs static analysis
+4. **Package** - Creates JAR (only if tests pass)
+5. **Deploy** - Copies artifact to C:\deployments (main branch only)
 
 ## Setup Requirements
 
