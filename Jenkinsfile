@@ -4,7 +4,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK21'
+        jdk 'JDK17'
         maven 'Maven3'
     }
 
@@ -41,12 +41,28 @@ pipeline {
 
         stage('Deploy') {
             when { branch 'main' }
-            steps { echo '✅ All regression tests passed. (Deployment step would go here.)' }
+            steps {
+                script {
+                    echo '✅ All regression tests passed. Deploying application...'
+                    // Create deployment directory if it doesn't exist
+                    bat 'if not exist "C:\\deployments" mkdir "C:\\deployments"'
+                    // Copy the jar file to deployment directory
+                    bat 'copy /Y target\\*.jar "C:\\deployments\\"'
+                    echo 'Deployment completed to C:\\deployments'
+                }
+            }
         }
     }
 
     post {
-        success { echo 'Pipeline succeeded.' }
-        failure { echo 'Pipeline failed.' }
+        success {
+            echo '✅ Pipeline succeeded - Build, Test, Package, and Deploy completed successfully!'
+        }
+        failure {
+            echo '❌ Pipeline failed - Check the logs above for details.'
+        }
+        always {
+            echo "Build #${currentBuild.number} finished with status: ${currentBuild.currentResult}"
+        }
     }
 }
